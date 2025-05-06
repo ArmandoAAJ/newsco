@@ -1,10 +1,11 @@
-import React, { useEffect, useImperativeHandle } from 'react';
+import React, { act, useEffect, useImperativeHandle } from 'react';
 
 import { slides } from '../../utils/constants';
 
 import { StoryWrapper } from '../storyWrapper';
 
 import Animated, {
+  runOnJS,
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated';
@@ -61,6 +62,19 @@ export const StoryList = ({ refFoward }: { refFoward: React.Ref<any> }) => {
     onScroll: (event) => {
       scrollX.value = event.contentOffset.x;
     },
+    onEndDrag: (event) => {
+      if (activeIndex === 0 || activeIndex === slides.length - 1) {
+        if (event.contentOffset.x < -50) {
+          runOnJS(onClose)();
+          return;
+        }
+
+        if (event.contentOffset.x > width * (slides.length - 1) + 50) {
+          runOnJS(onClose)();
+          return;
+        }
+      }
+    },
   });
 
   const hasActiveIndex = activeIndex !== null;
@@ -72,7 +86,7 @@ export const StoryList = ({ refFoward }: { refFoward: React.Ref<any> }) => {
         failOffsetX={[-5, 5]}
         onGestureEvent={(event) => {
           if (event.nativeEvent.translationY > 100) {
-            setActiveIndex(null);
+            onClose();
           }
         }}
         onBegan={() => {
@@ -111,6 +125,9 @@ export const StoryList = ({ refFoward }: { refFoward: React.Ref<any> }) => {
           }}
           onMomentumScrollEnd={(ev) => {
             const offsetX = ev.nativeEvent.contentOffset.x;
+
+            if (activeIndex === null) return;
+
             if (Math.abs(offsetX - (activeIndex ?? 0) * width) > width * 0.5) {
               setActiveIndex(Math.round(offsetX / width));
             }

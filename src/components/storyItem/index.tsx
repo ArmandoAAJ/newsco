@@ -28,6 +28,13 @@ export const StoryItem = memo(
     onClose,
   }: Props) => {
     const handleNextSlide = useCallback(() => {
+      const itemSize = (index + 1) * width;
+      const length = refList?.current?.props?.data?.length;
+
+      if (length && itemSize > (length - 1) * width) {
+        return onClose();
+      }
+
       refList?.current?.scrollToOffset({
         offset: (index + 1) * width,
         animated: true,
@@ -35,11 +42,17 @@ export const StoryItem = memo(
     }, [refList, index]);
 
     const handlePrevSlide = useCallback(() => {
+      const itemSize = (index - 1) * width;
+      if (itemSize < 0) {
+        return onClose();
+      }
+
       refList?.current?.scrollToOffset({
         offset: (index - 1) * width,
         animated: true,
       });
     }, [refList, index]);
+
     return (
       <SlideWrapper scrollX={scrollX} index={index}>
         <Slide

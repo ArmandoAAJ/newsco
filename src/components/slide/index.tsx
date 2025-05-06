@@ -66,7 +66,7 @@ export const Slide = ({
         <ContentImage>
           <Image
             onLoad={() => setLoading(false)}
-            source={{ uri: item.data[activeSlide].source }}
+            source={{ uri: item?.data?.[activeSlide]?.source }}
           />
         </ContentImage>
         <SlideHeader onPress={onClose} />

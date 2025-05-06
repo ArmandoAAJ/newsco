@@ -50,7 +50,7 @@ const images = [
   },
 ];
 
-export const slides = [...Array(50).keys()].map((s, idx) => {
+export const slides = [...Array(100).keys()].map((s, idx) => {
   return {
     key: faker.string.uuid(),
     data: faker.helpers.arrayElements(
